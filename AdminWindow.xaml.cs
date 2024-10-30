@@ -67,12 +67,14 @@ namespace WpfDead
 
         private void AddUser(object sender, RoutedEventArgs e)
         {
-
+            EditorWindow editor = new();
+            editor.Show();
         }
 
         private void EditUser(object sender, RoutedEventArgs e)
         {
-
+            EditorWindow editor = new(SelectedUser);
+            editor.Show();
         }
     }
 }

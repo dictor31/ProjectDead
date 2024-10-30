@@ -15,10 +15,10 @@
 			<Label Content="Пароль"/>
 			<TextBox Text="{Binding User.Password}"/>
 			<Label Content="Права"/>
-			<RadioButton GroupName="Admin" Content="Админ" IsChecked="{Binding User.Admin}"/>
+			<RadioButton x:Name="Admin_Y" GroupName="Admin" Content="Админ"/>
 			<RadioButton GroupName="Admin" Content="Пользователь"/>
 			<Label Content="Блокировка"/>
-			<RadioButton GroupName="Ban" Content="Да" IsChecked="{Binding User.Ban}"/>
+			<RadioButton x:Name="Ban_Y" GroupName="Ban" Content="Да"/>
 			<RadioButton GroupName="Ban" Content="Нет"/>
 			<StackPanel Height="20"/>
 			<Button Content="Сохранить" Click="Save"/>

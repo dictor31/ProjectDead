@@ -32,16 +32,21 @@ namespace WpfDead
             Users = JsonConvert.DeserializeObject<ObservableCollection<User>>(responceBody);
             foreach (var user in Users)
             {
-                if (user.Login == User.Login && user.Password == User.Password && !user.Admin)
+                if (user.Login == User.Login && user.Password == User.Password && !user.Admin && !user.Ban)
                 {
                     MessageBox.Show("Вход успешен");
                     return;
                 }
-                else if (user.Login == User.Login && user.Password == User.Password && user.Admin)
+                else if (user.Login == User.Login && user.Password == User.Password && user.Admin && !user.Ban)
                 {
                     AdminWindow adminWindow = new AdminWindow();
                     adminWindow.Show();
                     Close();
+                    return;
+                }
+                else if (user.Login == User.Login && user.Password == User.Password && !user.Admin && user.Ban)
+                {
+                    MessageBox.Show("Пользователь заблокирован");
                     return;
                 }
             }
