@@ -1,0 +1,27 @@
+﻿<Window x:Class="WpfDead.EditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfDead"
+        mc:Ignorable="d"
+        Title="EditorWindow" Height="450" Width="400">
+	<Grid>
+		<StackPanel>
+			<Label Content="ID"/>
+			<TextBox Text="{Binding User.Id}" IsReadOnly="True"/>
+			<Label Content="Логин"/>
+			<TextBox Text="{Binding User.Login}"/>
+			<Label Content="Пароль"/>
+			<TextBox Text="{Binding User.Password}"/>
+			<Label Content="Права"/>
+			<RadioButton GroupName="Admin" Content="Админ" IsChecked="{Binding User.Admin}"/>
+			<RadioButton GroupName="Admin" Content="Пользователь"/>
+			<Label Content="Блокировка"/>
+			<RadioButton GroupName="Ban" Content="Да" IsChecked="{Binding User.Ban}"/>
+			<RadioButton GroupName="Ban" Content="Нет"/>
+			<StackPanel Height="20"/>
+			<Button Content="Сохранить" Click="Save"/>
+		</StackPanel>
+	</Grid>
+</Window>
