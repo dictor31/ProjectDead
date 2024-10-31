@@ -30,16 +30,16 @@ namespace WpfDead
         HttpClient client = new();
         private User selectedUser;
 
-        public User SelectedUser 
+        public User SelectedUser
         {
             get => selectedUser;
-            set 
+            set
             {
                 selectedUser = value;
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("SelectedUser"));
             }
         }
-        
+
         public AdminWindow()
         {
             InitializeComponent();
@@ -73,8 +73,12 @@ namespace WpfDead
 
         private void EditUser(object sender, RoutedEventArgs e)
         {
-            EditorWindow editor = new(SelectedUser);
-            editor.Show();
+            if (SelectedUser != null)
+            {
+                EditorWindow editor = new(SelectedUser);
+                editor.Show();
+            }
+            MessageBox.Show("Выберите изменяемого пользователя");
         }
     }
 }

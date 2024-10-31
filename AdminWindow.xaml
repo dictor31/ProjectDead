@@ -5,18 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfDead"
         mc:Ignorable="d"
-        Title="AdminWindow" Height="450" Width="800">
+        Title="AdminWindow" Height="450" Width="800" MinHeight="300" MinWidth="500">
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="550"/>
+			<ColumnDefinition/>
 			<ColumnDefinition/>
 		</Grid.ColumnDefinitions>
 		<ListView ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}">
 			<ListView.View>
 				<GridView>
-					<GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}"/>
-					<GridViewColumn Header="Логин" DisplayMemberBinding="{Binding Login}"/>
-					<GridViewColumn Header="Пароль" DisplayMemberBinding="{Binding Password}"/>
+					<GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="30"/>
+					<GridViewColumn Header="Логин" DisplayMemberBinding="{Binding Login}" Width="100"/>
+					<GridViewColumn Header="Пароль" DisplayMemberBinding="{Binding Password}" Width="100"/>
+					<GridViewColumn Header="Блокировка" DisplayMemberBinding="{Binding Ban}"/>
+					<GridViewColumn Header="Админ" DisplayMemberBinding="{Binding Admin}"/>
 				</GridView>
 			</ListView.View>
 		</ListView>

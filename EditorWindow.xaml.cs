@@ -52,7 +52,13 @@ namespace WpfDead
 
                 string json = JsonSerializer.Serialize(User);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                var responce = await client.PostAsync("DB/AddUser", content);
+                var responce = await client.PostAsync("DB/CreateUser", content);
+                if (responce.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    MessageBox.Show("Пользователь существует");
+                    return;
+                }
+                MessageBox.Show("Пользователь создан");
             }
             else
             {

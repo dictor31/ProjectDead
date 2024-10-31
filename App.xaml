@@ -4,6 +4,9 @@
              xmlns:local="clr-namespace:WpfDead"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+		<Style TargetType="Button">
+			<Setter Property="BorderBrush" Value="Black"/>
+			<Setter Property="Background" Value="Orange"/>
+		</Style>
     </Application.Resources>
 </Application>
