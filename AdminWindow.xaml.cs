@@ -77,6 +77,7 @@ namespace WpfDead
             {
                 EditorWindow editor = new(SelectedUser);
                 editor.Show();
+                return;
             }
             MessageBox.Show("Выберите изменяемого пользователя");
         }

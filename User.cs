@@ -7,5 +7,7 @@
         public string Password { get; set; }
         public bool Admin { get; set; }
         public bool Ban { get; set; }
+        public DateTime? LastLogin { get; set; }
+        public bool First { get; set; } = true;
     }
 }

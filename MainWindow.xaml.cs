@@ -39,13 +39,36 @@ namespace WpfDead
                 {
                     MessageBox.Show("Заполните поля ввода");
                 }
+                else if ((DateTime.Today - user.LastLogin) > new TimeSpan(31, 0, 0, 0) && !user.Ban)
+                {
+                    user.Ban = true;
+                    user.LastLogin = DateTime.Now;
+                    string json = System.Text.Json.JsonSerializer.Serialize(user);
+                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var res = await client.PutAsync("DB/PutUser", content);
+                    MessageBox.Show("Аккаунт был заблокирован из-за длительного отсутстввия");
+                    return;
+                }
                 else if (user.Login == User.Login && user.Password == User.Password && !user.Admin && !user.Ban)
                 {
                     MessageBox.Show("Вход успешен");
+                    user.LastLogin = DateTime.Now;
+                    string json = System.Text.Json.JsonSerializer.Serialize(user);
+                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var res = await client.PutAsync("DB/PutUser", content);
                     return;
                 }
                 else if (user.Login == User.Login && user.Password == User.Password && user.Admin && !user.Ban)
                 {
+                    if (user.First)
+                    {
+                        PasswordWindow passwordWindow = new(user);
+                        passwordWindow.ShowDialog();
+                    }
+                    user.LastLogin = DateTime.Now;
+                    string json = System.Text.Json.JsonSerializer.Serialize(user);
+                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var res = await client.PutAsync("DB/PutUser", content);
                     AdminWindow adminWindow = new AdminWindow();
                     adminWindow.Show();
                     Close();
@@ -74,5 +97,6 @@ namespace WpfDead
             }
             MessageBox.Show("Такого пользователя нет");
         }
+
     }
 }
