@@ -12,8 +12,8 @@ namespace WpfDead
     public partial class MainWindow : Window
     {
         HttpClient client = new();
+        string lastLogin;
 
-        public ObservableCollection<User> Users { get; set; }
         public User User { get; set; } = new();
         int count = 3;
 
@@ -27,20 +27,25 @@ namespace WpfDead
 
         private async void Enter(object sender, RoutedEventArgs e)
         {
-            var responce = await client.GetAsync("DB/GetUsers");
-            var responceBody = await responce.Content.ReadAsStringAsync();
-            Users = JsonConvert.DeserializeObject<ObservableCollection<User>>(responceBody);
-            User find = Users.FirstOrDefault(s => s.Login == User.Login);
-            if (find == null)
+            if (String.IsNullOrEmpty(User.Login) || String.IsNullOrEmpty(User.Password))
             {
-                MessageBox.Show("Такого пользователя нет");
+                MessageBox.Show("Не все поля заполнены");
                 return;
             }
-            else if (User.Login == string.Empty || User.Password == string.Empty)
+            var responce = await client.GetAsync($"DB/SearchUser?login={User.Login}");
+            var responceBody = await responce.Content.ReadAsStringAsync();
+            if (responce.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                MessageBox.Show("Заполните поля ввода");
+                MessageBox.Show("Пользователь не найден");
+                return;
             }
-            else if ((DateTime.Today - find.LastLogin) > new TimeSpan(31, 0, 0, 0) && !find.Ban)
+            else if (responce.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                MessageBox.Show("Введены неверные данные");
+                return;
+            }
+            User find = JsonConvert.DeserializeObject<User>(responceBody);
+            if ((DateTime.Today - find.LastLogin) > new TimeSpan(31, 0, 0, 0) && !find.Ban)
             {
                 find.Ban = true;
                 find.LastLogin = DateTime.Now;
@@ -82,6 +87,11 @@ namespace WpfDead
             }
             else if (find.Login == User.Login && find.Password != User.Password)
             {
+                if (lastLogin != find.Login)
+                {
+                    count = 3;
+                }
+                lastLogin = find.Login;
                 count -= 1;
                 MessageBox.Show($"Пароль введён неверно. Осталось попыток: {count}");
                 if (count < 1)
