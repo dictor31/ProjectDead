@@ -17,9 +17,6 @@ using WebDead.Model;
 
 namespace WpfDead
 {
-    /// <summary>
-    /// Логика взаимодействия для PasswordWindow.xaml
-    /// </summary>
     public partial class PasswordWindow : Window
     {
         HttpClient client = new();
@@ -28,12 +25,12 @@ namespace WpfDead
         public string NewPassword { get; set; }
         public string NewPasswordAccess { get; set; }
 
-        public PasswordWindow(User user)
+        public PasswordWindow(User find)
         {
             InitializeComponent();
 
             client.BaseAddress = new Uri("https://localhost:7012/api/");
-            User = user;
+            User = find;
 
             DataContext = this;
         }
@@ -46,7 +43,6 @@ namespace WpfDead
                 return;
             }
             User.Password = NewPassword;
-            User.First = false;
             string json = System.Text.Json.JsonSerializer.Serialize(User);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
             var res = await client.PutAsync("DB/PutUser", content);

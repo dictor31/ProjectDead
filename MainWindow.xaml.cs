@@ -9,9 +9,6 @@ using Newtonsoft.Json;
 
 namespace WpfDead
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         HttpClient client = new();
@@ -33,70 +30,71 @@ namespace WpfDead
             var responce = await client.GetAsync("DB/GetUsers");
             var responceBody = await responce.Content.ReadAsStringAsync();
             Users = JsonConvert.DeserializeObject<ObservableCollection<User>>(responceBody);
-            foreach (var user in Users)
+            User find = Users.FirstOrDefault(s => s.Login == User.Login);
+            if (find == null)
             {
-                if (User.Login == string.Empty || User.Password == string.Empty)
-                {
-                    MessageBox.Show("Заполните поля ввода");
-                }
-                else if ((DateTime.Today - user.LastLogin) > new TimeSpan(31, 0, 0, 0) && !user.Ban)
-                {
-                    user.Ban = true;
-                    user.LastLogin = DateTime.Now;
-                    string json = System.Text.Json.JsonSerializer.Serialize(user);
-                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var res = await client.PutAsync("DB/PutUser", content);
-                    MessageBox.Show("Аккаунт был заблокирован из-за длительного отсутстввия");
-                    return;
-                }
-                else if (user.Login == User.Login && user.Password == User.Password && !user.Admin && !user.Ban)
-                {
-                    MessageBox.Show("Вход успешен");
-                    user.LastLogin = DateTime.Now;
-                    string json = System.Text.Json.JsonSerializer.Serialize(user);
-                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var res = await client.PutAsync("DB/PutUser", content);
-                    return;
-                }
-                else if (user.Login == User.Login && user.Password == User.Password && user.Admin && !user.Ban)
-                {
-                    if (user.First)
-                    {
-                        PasswordWindow passwordWindow = new(user);
-                        passwordWindow.ShowDialog();
-                    }
-                    user.LastLogin = DateTime.Now;
-                    string json = System.Text.Json.JsonSerializer.Serialize(user);
-                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var res = await client.PutAsync("DB/PutUser", content);
-                    AdminWindow adminWindow = new AdminWindow();
-                    adminWindow.Show();
-                    Close();
-                    return;
-                }
-                else if (user.Login == User.Login && user.Ban)
-                {
-                    MessageBox.Show("Пользователь заблокирован");
-                    return;
-                }
-                else if (user.Login == User.Login && user.Password != User.Password)
-                {
-                    count -= 1;
-                    MessageBox.Show($"Пароль введён неверно. Осталось попыток {count}");
-                    if (count < 1)
-                    {
-                        user.Ban = true;
-                        string json = System.Text.Json.JsonSerializer.Serialize(user);
-                        StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                        var res = await client.PutAsync("DB/PutUser", content);
-                        MessageBox.Show("Аккаунт был заблокирован");
-                        count = 3;
-                    }
-                    return;
-                }
+                MessageBox.Show("Такого пользователя нет");
+                return;
             }
-            MessageBox.Show("Такого пользователя нет");
+            else if (User.Login == string.Empty || User.Password == string.Empty)
+            {
+                MessageBox.Show("Заполните поля ввода");
+            }
+            else if ((DateTime.Today - find.LastLogin) > new TimeSpan(31, 0, 0, 0) && !find.Ban)
+            {
+                find.Ban = true;
+                find.LastLogin = DateTime.Now;
+                string json = System.Text.Json.JsonSerializer.Serialize(find);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                var res = await client.PutAsync("DB/PutUser", content);
+                MessageBox.Show("Аккаунт был заблокирован из-за длительного отсутствия");
+                return;
+            }
+            else if (find.Login == User.Login && find.Password == User.Password && !find.Admin && !find.Ban)
+            {
+                MessageBox.Show("Вход успешен");
+                find.LastLogin = DateTime.Now;
+                string json = System.Text.Json.JsonSerializer.Serialize(find);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                var res = await client.PutAsync("DB/PutUser", content);
+                return;
+            }
+            else if (find.Login == User.Login && find.Password == User.Password && find.Admin && !find.Ban)
+            {
+                if (find.LastLogin == null)
+                {
+                    PasswordWindow passwordWindow = new(find);
+                    passwordWindow.ShowDialog();
+                }
+                find.LastLogin = DateTime.Now;
+                string json = System.Text.Json.JsonSerializer.Serialize(find);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                var res = await client.PutAsync("DB/PutUser", content);
+                AdminWindow adminWindow = new AdminWindow();
+                adminWindow.Show();
+                Close();
+                return;
+            }
+            else if (find.Login == User.Login && find.Ban)
+            {
+                MessageBox.Show("Пользователь заблокирован");
+                return;
+            }
+            else if (find.Login == User.Login && find.Password != User.Password)
+            {
+                count -= 1;
+                MessageBox.Show($"Пароль введён неверно. Осталось попыток: {count}");
+                if (count < 1)
+                {
+                    find.Ban = true;
+                    string json = System.Text.Json.JsonSerializer.Serialize(find);
+                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var res = await client.PutAsync("DB/PutUser", content);
+                    MessageBox.Show("Аккаунт был заблокирован");
+                    count = 3;
+                }
+                return;
+            }
         }
-
     }
 }

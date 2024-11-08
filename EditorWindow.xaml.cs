@@ -18,9 +18,6 @@ using WebDead.Model;
 
 namespace WpfDead
 {
-    /// <summary>
-    /// Логика взаимодействия для EditorWindow.xaml
-    /// </summary>
     public partial class EditorWindow : Window
     {
         HttpClient client = new();
@@ -34,12 +31,12 @@ namespace WpfDead
             client.BaseAddress = new Uri("https://localhost:7012/api/");
             DataContext = this;
         }
-        public EditorWindow(User user)
+        public EditorWindow(User find)
         {
             InitializeComponent();
 
             client.BaseAddress = new Uri("https://localhost:7012/api/");
-            User = user;
+            User = find;
             DataContext = this;
         }
 

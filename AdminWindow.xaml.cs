@@ -20,9 +20,6 @@ using WebDead.Model;
 
 namespace WpfDead
 {
-    /// <summary>
-    /// Логика взаимодействия для AdminWindow.xaml
-    /// </summary>
     public partial class AdminWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -45,30 +42,26 @@ namespace WpfDead
             InitializeComponent();
             client.BaseAddress = new Uri("https://localhost:7012/api/");
 
-            //DispatcherTimer timer = new();
-            //timer.Interval = TimeSpan.FromSeconds(5);
-            //timer.Tick += GetUsers;
-            //timer.Start();
-
-            GetUsers(null, null);
+            GetUsers();
             DataContext = this;
         }
-        private async void GetUsers(object? sender, EventArgs e)
+        private async void GetUsers()
         {
             Users.Clear();
             var responce = await client.GetAsync("DB/GetUsers");
             var responceBody = await responce.Content.ReadAsStringAsync();
             ObservableCollection<User> users = JsonConvert.DeserializeObject<ObservableCollection<User>>(responceBody);
-            foreach (var user in users)
+            foreach (var find in users)
             {
-                Users.Add(user);
+                Users.Add(find);
             }
         }
 
         private void AddUser(object sender, RoutedEventArgs e)
         {
             EditorWindow editor = new();
-            editor.Show();
+            editor.ShowDialog();
+            GetUsers();
         }
 
         private void EditUser(object sender, RoutedEventArgs e)
@@ -76,7 +69,8 @@ namespace WpfDead
             if (SelectedUser != null)
             {
                 EditorWindow editor = new(SelectedUser);
-                editor.Show();
+                editor.ShowDialog();
+                GetUsers();
                 return;
             }
             MessageBox.Show("Выберите изменяемого пользователя");
