@@ -20,7 +20,6 @@ namespace WpfDead
 {
     public partial class EditorWindow : Window
     {
-        HttpClient client = new();
         public User User { get; set; }
 
         public EditorWindow()
@@ -28,14 +27,12 @@ namespace WpfDead
             InitializeComponent();
 
             User = new();
-            client.BaseAddress = new Uri("https://localhost:7012/api/");
             DataContext = this;
         }
         public EditorWindow(User find)
         {
             InitializeComponent();
 
-            client.BaseAddress = new Uri("https://localhost:7012/api/");
             User = find;
             DataContext = this;
         }
@@ -49,7 +46,7 @@ namespace WpfDead
 
                 string json = JsonSerializer.Serialize(User);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                var responce = await client.PostAsync("DB/CreateUser", content);
+                var responce = await Client.HttpClient.PostAsync("DB/CreateUser", content);
                 if (responce.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
                     MessageBox.Show("Пользователь существует");
@@ -63,7 +60,7 @@ namespace WpfDead
                 User.Admin = Admin_Y.IsChecked == true ? true : false;
                 string json = JsonSerializer.Serialize(User);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                var responce = await client.PutAsync("DB/PutUser", content);
+                var responce = await Client.HttpClient.PutAsync("DB/PutUser", content);
             }
             Close();
         }

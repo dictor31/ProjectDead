@@ -6,12 +6,13 @@ using System.Windows;
 using System.Text.Json;
 using WebDead.Model;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
+using System.Net.Http.Headers;
 
 namespace WpfDead
 {
     public partial class MainWindow : Window
     {
-        HttpClient client = new();
         string lastLogin;
 
         public User User { get; set; } = new();
@@ -21,7 +22,6 @@ namespace WpfDead
         {
             InitializeComponent();
 
-            client.BaseAddress = new Uri("https://localhost:7012/api/");
             DataContext = this;
         }
 
@@ -32,7 +32,7 @@ namespace WpfDead
                 MessageBox.Show("Не все поля заполнены");
                 return;
             }
-            var responce = await client.GetAsync($"DB/SearchUser?login={User.Login}");
+            var responce = await Client.HttpClient.GetAsync($"DB/SearchUser?login={User.Login}");
             var responceBody = await responce.Content.ReadAsStringAsync();
             if (responce.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -51,7 +51,7 @@ namespace WpfDead
                 find.LastLogin = DateTime.Now;
                 string json = System.Text.Json.JsonSerializer.Serialize(find);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                var res = await client.PutAsync("DB/PutUser", content);
+                var res = await Client.HttpClient.PutAsync("DB/PutUser", content);
                 MessageBox.Show("Аккаунт был заблокирован из-за длительного отсутствия");
                 return;
             }
@@ -61,7 +61,7 @@ namespace WpfDead
                 find.LastLogin = DateTime.Now;
                 string json = System.Text.Json.JsonSerializer.Serialize(find);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                var res = await client.PutAsync("DB/PutUser", content);
+                var res = await Client.HttpClient.PutAsync("DB/PutUser", content);
                 return;
             }
             else if (find.Login == User.Login && find.Password == User.Password && find.Admin && !find.Ban)
@@ -74,7 +74,11 @@ namespace WpfDead
                 find.LastLogin = DateTime.Now;
                 string json = System.Text.Json.JsonSerializer.Serialize(find);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                var res = await client.PutAsync("DB/PutUser", content);
+                var res = await Client.HttpClient.PutAsync("DB/PutUser", content);
+
+                TokenRole tokenRole = await Client.HttpClient.GetFromJsonAsync<TokenRole>($"Jwt/login?login={find.Login}&password={find.Password}");
+                Client.SetToken(tokenRole.Token);
+
                 AdminWindow adminWindow = new AdminWindow();
                 adminWindow.Show();
                 Close();
@@ -99,7 +103,7 @@ namespace WpfDead
                     find.Ban = true;
                     string json = System.Text.Json.JsonSerializer.Serialize(find);
                     StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var res = await client.PutAsync("DB/PutUser", content);
+                    var res = await Client.HttpClient.PutAsync("DB/PutUser", content);
                     MessageBox.Show("Аккаунт был заблокирован");
                     count = 3;
                 }

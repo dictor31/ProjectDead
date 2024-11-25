@@ -19,7 +19,6 @@ namespace WpfDead
 {
     public partial class PasswordWindow : Window
     {
-        HttpClient client = new();
         public User User { get; set; }
         public string LastPassword { get; set; }
         public string NewPassword { get; set; }
@@ -29,7 +28,7 @@ namespace WpfDead
         {
             InitializeComponent();
 
-            client.BaseAddress = new Uri("https://localhost:7012/api/");
+            Client.HttpClient.BaseAddress = new Uri("https://localhost:7012/api/");
             User = find;
 
             DataContext = this;
@@ -45,7 +44,7 @@ namespace WpfDead
             User.Password = NewPassword;
             string json = System.Text.Json.JsonSerializer.Serialize(User);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            var res = await client.PutAsync("DB/PutUser", content);
+            var res = await Client.HttpClient.PutAsync("DB/PutUser", content);
             MessageBox.Show("Пароль успешно изменен");
             Close();
         }

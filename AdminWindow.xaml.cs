@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +25,6 @@ namespace WpfDead
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         public ObservableCollection<User> Users { get; set; } = new();
-        HttpClient client = new();
         private User selectedUser;
 
         public User SelectedUser
@@ -40,7 +40,6 @@ namespace WpfDead
         public AdminWindow()
         {
             InitializeComponent();
-            client.BaseAddress = new Uri("https://localhost:7012/api/");
 
             GetUsers();
             DataContext = this;
@@ -48,7 +47,8 @@ namespace WpfDead
         private async void GetUsers()
         {
             Users.Clear();
-            var responce = await client.GetAsync("DB/GetUsers");
+            //BaseResponce responce = await Client.HttpClient.GetFromJsonAsync<BaseResponce>("DB/GetUsers");
+            var responce = await Client.HttpClient.GetAsync("DB/GetUsers");
             var responceBody = await responce.Content.ReadAsStringAsync();
             ObservableCollection<User> users = JsonConvert.DeserializeObject<ObservableCollection<User>>(responceBody);
             foreach (var find in users)
