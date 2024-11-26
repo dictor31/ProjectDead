@@ -47,7 +47,6 @@ namespace WpfDead
         private async void GetUsers()
         {
             Users.Clear();
-            //BaseResponce responce = await Client.HttpClient.GetFromJsonAsync<BaseResponce>("DB/GetUsers");
             var responce = await Client.HttpClient.GetAsync("DB/GetUsers");
             var responceBody = await responce.Content.ReadAsStringAsync();
             ObservableCollection<User> users = JsonConvert.DeserializeObject<ObservableCollection<User>>(responceBody);

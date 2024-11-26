@@ -28,7 +28,6 @@ namespace WpfDead
         {
             InitializeComponent();
 
-            Client.HttpClient.BaseAddress = new Uri("https://localhost:7012/api/");
             User = find;
 
             DataContext = this;
